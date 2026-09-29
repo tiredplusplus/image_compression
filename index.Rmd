@@ -95,7 +95,7 @@ plot_errork <- function(errork) {
   ggplot(errork, aes(x = k, y = error)) +
     geom_line() + 
     geom_point(size = 0.5) +
-    scale_y_continuous(trans = scale::pseudo_log_trans(base = 10)) +
+    scale_y_continuous(trans = scales::pseudo_log_trans(base = 10)) +
     labs(x = "k (rank)", y = "Frobenius norm error (pseuro log)", title = "Approximation Error vs. k")
 }
 
