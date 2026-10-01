@@ -1,7 +1,7 @@
 ---
 title: "Image Compression Function Website Showcase"
 author: "Lin Guo"
-date: "September 25, 2026"
+date: "September 28, 2026"
 output: html_document
 ---
 
@@ -11,14 +11,14 @@ library(readr)
 library(ggplot2)
 ```
 
-## My image compression function
+# My image compression function
 
 Write a function in R that takes as input an image (as an 𝑛 × 𝑝 matrix) and a value 𝑘 and returns
 1. The rank 𝑘 approximation to the image using principal components analysis;
 2. The error of the rank 𝑘 approximation according to the Frobenius norm.
 
 ```{r}
-# image compression function using PCA
+## image compression function using PCA
 compress_image <- function(x, k) {
   pca <- prcomp(x, center = FALSE, scale. = FALSE)
   U <- pca$rotation
@@ -34,9 +34,9 @@ compress_image <- function(x, k) {
 }
 ```
 
-## Plots
+# Plots
 
-# Image helper functions
+### Image helper functions
 ```{r}
 ## converts matrix into dataframe format for ggplot2
 matrix_df <- function(mat, labels) {
@@ -50,14 +50,13 @@ matrix_df <- function(mat, labels) {
   )
 }
 
-
-# 1. plots original image followed by the first 10 PCA approx
+## 1. plots original image followed by the first 10 PCA approx
 pca_comparisions <- function(x, ks = 1: 10, ncol = 4) {
   pca <- prcomp(x, center = FALSE, scale. = FALSE)
   U <- pca$rotation
   Z <- pca$x
-  labels <- c("Oiginal image", paste0("k = ", ks))
-  df_list <- list(matrix_df(x, "Original image"))
+  labels <- c("image", paste0("k = ", ks))
+  df_list <- list(matrix_df(x, "image"))
   
   for (k in ks) {
     xk <- Z[, 1:k, drop = FALSE] %*% t(U[, 1:k, drop = FALSE])
@@ -71,10 +70,16 @@ pca_comparisions <- function(x, ks = 1: 10, ncol = 4) {
     geom_raster() +
     scale_fill_gradient(low = "black", high = "white") +
     scale_y_reverse() +
-    coord_fixed(ratio = ncol(x) / nrow(x) * 3) + 
-    facet_wrap(~ panel, ncol = ncol) 
+    coord_fixed() + 
+    # coord_fixed(ratio = ncol(x) / nrow(x) * 3) + 
+    facet_wrap(~ panel, ncol = ncol) +
+    labs(title = "First 10 PCA Approximations") +
+    theme_minimal(base_size = 10) +
+    theme(axis.title = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank(),
+          strip.text = element_text(size = 7))
 }
-
 
 ## calculates approx error vs. for all k  
 find_errork <- function(x) {
@@ -90,108 +95,133 @@ find_errork <- function(x) {
   data.frame(k = 1:p, error = errors)
 }
 
-# 2. plots approx error vs. k curve
+## 2. plots approx error vs. k curve
 plot_errork <- function(errork) {
   ggplot(errork, aes(x = k, y = error)) +
     geom_line() + 
-    geom_point(size = 0.5) +
+    geom_point(size = 1) +
     scale_y_continuous(trans = scales::pseudo_log_trans(base = 10)) +
-    labs(x = "k (rank)", y = "Frobenius norm error (pseuro log)", title = "Approximation Error vs. k")
+    labs(x = "k (rank)", y = "Frobenius norm error (pseudo log)", title = "Approximation Error vs. k") +
+  theme_minimal(base_size = 10)
 }
 
-
-# 3. plots  first eigenvector and  first PC score
+## 3. plots  first eigenvector and  first PC score
 plot_ev1_pc1 <- function(U, Z) {
-  df_u <- data.frame(index = seq_len(nrow(U)), value = U[, 1],
-                      panel = "First eigenvector")
-  df_z <- data.frame(index = seq_len(nrow(Z)), value = Z[, 1],
-                      panel = "First PC score")
+  df_u <- data.frame(index = seq_len(nrow(U)), value = U[, 1], panel = "First eigenvector")
+  df_z <- data.frame(index = seq_len(nrow(Z)), value = Z[, 1], panel = "First PC score")
   df_all <- rbind(df_u, df_z)
-  df_all$panel <- factor(df_all$panel,
-                levels = c("First eigenvector", "First PC score"))
+  df_all$panel <- factor(df_all$panel, levels = c("First eigenvector", "First PC score"))
 
   ggplot(df_all, aes(x = index, y = value)) +
     geom_line() +
     facet_wrap(~ panel, scales = "free", ncol = 2) +
-    labs(x = NULL, y = NULL) +
-    theme_minimal()
+    labs(x = "Index", y = "Value", title = "First Eigenvector and First PC Score") +
+    theme_minimal(base_size = 10)
 }
 ```
 
-# Image 1
+## Image 1
 ```{r}
 # read image 1
 x1 <- read.csv("image1.csv")
 x1 <- data.matrix(x1)
+```
 
+```{r fig.width=8, fig.height=10}
 # plot of og image followed by the first 10 PCA approx
 pca_comparisions(x1, ks = 1:10)
+```
 
+```{r}
 # plot of approximation error vs. k
 error1 <- find_errork(x1)
 plot_errork(error1)
+```
+The curve steadily decreases as k increases and sharply drops approaching full rank, so variation is spread across the components. A sufficient k is 90.
 
+```{r}
 # plot of first eigenvector and first PC score
 pca1 <- prcomp(x1, center = FALSE, scale. = FALSE)
 plot_ev1_pc1(pca1$rotation, pca1$x)
 ```
-interpret
+The loadings of the first eigenvector (v1) is flat near 0 except one loading near -1.0 around index 78. This suggests PC1 places almost all its weight on an index near 78. The first PC score also consistently oscillates between roughly indices -17 and -22; score suggests regular, high-frequency spikes.
 
-opinion
 
-# Image 2
+## Image 2
 ```{r}
 # read image 1
 x2 <- read.csv("image2.csv")
 x2 <- data.matrix(x2)
+```
 
+```{r fig.width=8, fig.height=10}
 # plot of og image followed by the first 10 PCA approx
 pca_comparisions(x2, ks = 1:10)
+```
 
+```{r}
 # plot of approximation error vs. k
 error2 <- find_errork(x2)
 plot_errork(error2)
+```
+The error curve drops after k = 1 and remains flat near 0, so nearly all variation is captured by the first component. Thus, the sufficient k is 1.
 
+```{r}
 # plot of first eigenvector and first PC score
 pca2 <- prcomp(x2, center = FALSE, scale. = FALSE)
 plot_ev1_pc1(pca2$rotation, pca2$x)
 ```
+The loadings of v1 decrease steadily from 0 to almost -2.0, suggesting PC1 represents a low-complexity directional pattern across indices with small noise. PCS1 densely oscillates between -2000 and 4000 with high frequency.
 
 
-# Image 3
+## Image 3
 ```{r}
 # read image 1
 x3 <- read.csv("image3.csv")
 x3 <- data.matrix(x3)
+```
 
+```{r fig.width=8, fig.height=10}
 # plot of og image followed by the first 10 PCA approx
 pca_comparisions(x3, ks = 1:10)
+```
 
+```{r}
 # plot of approximation error vs. k
 error3 <- find_errork(x3)
 plot_errork(error3)
+```
+The curve declines deeper at first before becoming less sloped and constant across the rest of the indices wiht fair even spread of variation; a sufficient k is 25.
 
+```{r}
 # plot of first eigenvector and first PC score
 pca3 <- prcomp(x3, center = FALSE, scale. = FALSE)
 plot_ev1_pc1(pca3$rotation, pca3$x)
 ```
+The loadings of v1 form several peaks and valleys, suggesting PC1 reflects several greyscale transitions across the image. The first PC score first forms a peak before descent, suggesting a broad and continuous range of brightness across middle of the image. 
 
-
-Image 4
+# Image 4
 ```{r}
 # read image 1
 x4 <- read.csv("image4.csv")
 x4 <- data.matrix(x4)
+```
 
+```{r fig.width=8, fig.height=10}
 # plot of og image followed by the first 10 PCA approx
 pca_comparisions(x4, ks = 1:10)
+```
 
+```{r}
 # plot of approximation error vs. k
 error4 <- find_errork(x4)
 plot_errork(error4)
+```
+The slope trend is similar to image 3's but with variation spread across a moderate number of components; a sufficient k is 18.
 
+```{r}
 # plot of first eigenvector and first PC score
 pca4 <- prcomp(x4, center = FALSE, scale. = FALSE)
 plot_ev1_pc1(pca4$rotation, pca4$x)
 ```
-
+The loadings of v1 first peak between indices 25 and 50 before immediately dipping from indices 60 to 90 then generally increasing again. This suggests PC1 is not one isolated column. PCS1 follows a similar trend, suggesting structural regions down rows may vary together in correlation and repetition. 
