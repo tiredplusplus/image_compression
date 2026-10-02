@@ -1,5 +1,5 @@
 ---
-title: "Image Compression Function Website Showcase"
+title: "Image Compression Function"
 author: "Lin Guo"
 date: "September 28, 2026"
 output: html_document
@@ -191,7 +191,7 @@ pca_comparisions(x3, ks = 1:10)
 error3 <- find_errork(x3)
 plot_errork(error3)
 ```
-The curve declines deeper at first before becoming less sloped and constant across the rest of the indices wiht fair even spread of variation; a sufficient k is 25.
+The curve declines deeper at first before becoming less sloped and constant across the rest of the indices wiht fair even spread of variation; a sufficient k is 25. 
 
 ```{r}
 # plot of first eigenvector and first PC score
