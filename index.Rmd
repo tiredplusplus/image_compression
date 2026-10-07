@@ -137,6 +137,7 @@ pca_comparisions(x1, ks = 1:10)
 error1 <- find_errork(x1)
 plot_errork(error1)
 ```
+
 The curve steadily decreases as k increases and sharply drops approaching full rank, so variation is spread across the components. A sufficient k is 90.
 
 ```{r}
@@ -144,6 +145,7 @@ The curve steadily decreases as k increases and sharply drops approaching full r
 pca1 <- prcomp(x1, center = FALSE, scale. = FALSE)
 plot_ev1_pc1(pca1$rotation, pca1$x)
 ```
+
 The loadings of the first eigenvector (v1) is flat near 0 except one loading near -1.0 around index 78. This suggests PC1 places almost all its weight on an index near 78. The first PC score also consistently oscillates between roughly indices -17 and -22; score suggests regular, high-frequency spikes.
 
 
@@ -164,6 +166,7 @@ pca_comparisions(x2, ks = 1:10)
 error2 <- find_errork(x2)
 plot_errork(error2)
 ```
+
 The error curve drops after k = 1 and remains flat near 0, so nearly all variation is captured by the first component. Thus, the sufficient k is 1.
 
 ```{r}
@@ -171,6 +174,7 @@ The error curve drops after k = 1 and remains flat near 0, so nearly all variati
 pca2 <- prcomp(x2, center = FALSE, scale. = FALSE)
 plot_ev1_pc1(pca2$rotation, pca2$x)
 ```
+
 The loadings of v1 decrease steadily from 0 to almost -2.0, suggesting PC1 represents a low-complexity directional pattern across indices with small noise. PCS1 densely oscillates between -2000 and 4000 with high frequency.
 
 
@@ -191,6 +195,7 @@ pca_comparisions(x3, ks = 1:10)
 error3 <- find_errork(x3)
 plot_errork(error3)
 ```
+
 The curve declines deeper at first before becoming less sloped and constant across the rest of the indices wiht fair even spread of variation; a sufficient k is 25. 
 
 ```{r}
@@ -198,6 +203,7 @@ The curve declines deeper at first before becoming less sloped and constant acro
 pca3 <- prcomp(x3, center = FALSE, scale. = FALSE)
 plot_ev1_pc1(pca3$rotation, pca3$x)
 ```
+
 The loadings of v1 form several peaks and valleys, suggesting PC1 reflects several greyscale transitions across the image. The first PC score first forms a peak before descent, suggesting a broad and continuous range of brightness across middle of the image. 
 
 # Image 4
@@ -217,6 +223,7 @@ pca_comparisions(x4, ks = 1:10)
 error4 <- find_errork(x4)
 plot_errork(error4)
 ```
+
 The slope trend is similar to image 3's but with variation spread across a moderate number of components; a sufficient k is 18.
 
 ```{r}
@@ -224,4 +231,5 @@ The slope trend is similar to image 3's but with variation spread across a moder
 pca4 <- prcomp(x4, center = FALSE, scale. = FALSE)
 plot_ev1_pc1(pca4$rotation, pca4$x)
 ```
+
 The loadings of v1 first peak between indices 25 and 50 before immediately dipping from indices 60 to 90 then generally increasing again. This suggests PC1 is not one isolated column. PCS1 follows a similar trend, suggesting structural regions down rows may vary together in correlation and repetition. 
